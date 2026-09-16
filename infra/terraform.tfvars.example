@@ -1,0 +1,17 @@
+# Copy to terraform.tfvars (gitignored) and fill in real values.
+# Never commit terraform.tfvars - it can contain secrets.
+
+aws_region     = "ap-southeast-1"
+aws_profile    = "chuanhtuan"
+aws_account_id = "610734023706"
+
+# Create this key pair in the EC2 console first (EC2 > Key Pairs > Create),
+# download the .pem, then reference its name here.
+ssh_key_name = "hello-world-key"
+
+# Restrict SSH to your own IP, e.g. "203.0.113.10/32"
+ssh_allowed_cidr = "0.0.0.0/0"
+
+db_password = "ChangeMe-Use-A-Strong-Password-123!"
+
+github_repo_ssh_url = "git@github.com:chuanhtuan/hello_world.git"
