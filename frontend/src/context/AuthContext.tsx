@@ -6,13 +6,27 @@ import type { User } from '../api/client';
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
+  /** Email + password login. `remember` controls session length (see backend utils/session.ts). */
+  login: (email: string, password: string, remember: boolean) => Promise<void>;
+  /** Self sign-up: name + email only. Does NOT log the user in - an activation email is sent instead. */
+  signup: (name: string, email: string) => Promise<string>;
+  /** Google Identity Services credential (ID token) -> sign up or log in. */
+  loginWithGoogle: (credential: string, remember: boolean) => Promise<void>;
+  /** Sets the password for a pending account and logs the user in. */
+  activateAccount: (token: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+function persistSession(token: string, user: User) {
+  // The token itself always carries its own expiry (short by default,
+  // long when "Remember me" is checked) - see backend utils/jwt.ts -
+  // so storing it here doesn't override that server-side decision.
+  localStorage.setItem('token', token);
+  return user;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -33,16 +47,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function login(email: string, password: string) {
-    const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
+  async function login(email: string, password: string, remember: boolean) {
+    const { data } = await api.post('/auth/login', { email, password, remember });
+    setUser(persistSession(data.token, data.user));
   }
 
-  async function signup(name: string, email: string, password: string) {
-    const { data } = await api.post('/auth/signup', { name, email, password });
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
+  async function signup(name: string, email: string): Promise<string> {
+    const { data } = await api.post('/auth/signup', { name, email });
+    return data.message as string;
+  }
+
+  async function loginWithGoogle(credential: string, remember: boolean) {
+    const { data } = await api.post('/auth/google', { credential, remember });
+    setUser(persistSession(data.token, data.user));
+  }
+
+  async function activateAccount(token: string, password: string) {
+    const { data } = await api.post(`/auth/activate/${token}`, { password });
+    setUser(persistSession(data.token, data.user));
   }
 
   async function logout() {
@@ -52,7 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, refreshProfile }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, signup, loginWithGoogle, activateAccount, logout, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -7,8 +7,10 @@ export interface TokenPayload {
   role: Role;
 }
 
-export function signToken(payload: TokenPayload): string {
-  const options: SignOptions = { expiresIn: env.jwtExpiresIn as SignOptions['expiresIn'] };
+export function signToken(payload: TokenPayload, expiresIn?: string): string {
+  const options: SignOptions = {
+    expiresIn: (expiresIn ?? env.jwtExpiresInDefault) as SignOptions['expiresIn'],
+  };
   return jwt.sign(payload, env.jwtSecret, options);
 }
 

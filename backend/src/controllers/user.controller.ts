@@ -7,6 +7,7 @@ import { env } from '../config/env';
 import { s3Client } from '../config/s3';
 import { asyncHandler } from '../utils/asyncHandler';
 import { ApiError } from '../middlewares/error.middleware';
+import { createPendingUserAndSendActivation } from '../services/activation.service';
 
 // GET /api/users - admin only: list all users
 export const listUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -20,6 +21,27 @@ export const listUsers = asyncHandler(async (req: Request, res: Response) => {
   });
 
   res.json({ users: rows.map((u) => u.toPublicJSON()), total: count, page, pageSize });
+});
+
+const createUserSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100),
+  email: z.string().email(),
+  role: z.nativeEnum(Role).optional().default(Role.USER),
+});
+
+// POST /api/users - admin only: create a user (name + email). An
+// activation email is sent so the new user sets their own password,
+// same as self sign-up.
+export const createUser = asyncHandler(async (req: Request, res: Response) => {
+  const { name, email, role } = createUserSchema.parse(req.body);
+
+  const existing = await User.findOne({ where: { email } });
+  if (existing) {
+    throw new ApiError(409, 'A user with this email already exists');
+  }
+
+  const user = await createPendingUserAndSendActivation(name, email, role);
+  res.status(201).json({ user: user.toPublicJSON() });
 });
 
 // GET /api/users/me - current user's own profile

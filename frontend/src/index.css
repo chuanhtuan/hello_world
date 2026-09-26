@@ -97,3 +97,30 @@ dd { margin: 0; }
 .user-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
 .user-table th, .user-table td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid #e5e7eb; }
 .user-table button { background: #dc2626; color: white; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; cursor: pointer; }
+
+.checkbox-label { flex-direction: row !important; align-items: center; gap: 0.5rem !important; }
+.checkbox-label input { width: auto; }
+
+.divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0; color: #9ca3af; font-size: 0.85rem; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+
+.google-button-wrap { display: flex; justify-content: center; }
+
+.hint { color: #6b7280; font-size: 0.85rem; margin: -0.5rem 0 0; }
+
+.page-header { display: flex; justify-content: space-between; align-items: center; }
+.page-header button {
+  background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;
+}
+
+.inline-form {
+  background: white; padding: 1.25rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin: 1rem 0; flex-direction: row !important; flex-wrap: wrap; align-items: flex-end !important; gap: 1rem !important;
+}
+.inline-form label { flex: 1; min-width: 140px; }
+.inline-form select { padding: 0.6rem 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; }
+.inline-form button { height: fit-content; }
+
+.badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.badge-active { background: #dcfce7; color: #166534; }
+.badge-pending { background: #fef3c7; color: #92400e; }

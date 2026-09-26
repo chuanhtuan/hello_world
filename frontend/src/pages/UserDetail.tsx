@@ -32,6 +32,10 @@ export function UserDetail() {
           <dd>{user.email}</dd>
           <dt>Role</dt>
           <dd>{user.role}</dd>
+          <dt>Status</dt>
+          <dd><span className={`badge badge-${user.status.toLowerCase()}`}>{user.status}</span></dd>
+          <dt>Sign-in</dt>
+          <dd>{user.provider === 'GOOGLE' ? 'Google' : 'Email & password'}</dd>
           <dt>Joined</dt>
           <dd>{new Date(user.createdAt).toLocaleDateString()}</dd>
         </dl>

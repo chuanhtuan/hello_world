@@ -4,11 +4,20 @@ Full-stack web app: React (TypeScript) frontend, Node/Express (TypeScript) backe
 
 ## Features
 
-- Sign up / log in / log out (JWT, httpOnly cookie + bearer token fallback)
+- Sign up with just name + email; an activation email lets the user set their own password (JWT, httpOnly cookie + bearer token fallback)
+- Sign up / log in with Google (Google Identity Services) - no password needed, account is active immediately
+- "Remember me" at login - checked = 30-day session, unchecked = cleared when the browser closes
 - Forgot password / reset password via emailed link (SMTP)
 - View and edit own profile (name, email, avatar)
 - Avatar upload to S3
-- Admin: list all users, view any user's profile, delete a user
+- Admin: list all users (with status/sign-in method), invite a new user by name + email (also goes through the activation-email flow), view any user's profile, delete a user
+
+### Account activation flow
+
+Whether an account comes from self sign-up, an admin invite, or Google:
+
+1. **Self sign-up / admin invite (email + password accounts):** only name + email are collected up front. The account starts `PENDING` with no password. An email is sent with a link to `/activate/:token` (valid 24h). Clicking it lets the user set a password, which flips the account to `ACTIVE` and logs them in. Logging in before activating returns a clear "please activate your account" error, with `/api/auth/resend-activation` available to request a new link.
+2. **Google sign-up/login:** Google has already verified the email, so there's no separate activation email or password step - the first successful Google sign-in creates (or links to) the account and marks it `ACTIVE` right away. If someone later wants to also log in with a password on that account, they'd use "Forgot password" to set one (not wired to a UI button by default, but the endpoint supports it since the account is already `ACTIVE`).
 
 ## Project structure
 
@@ -26,7 +35,15 @@ docker-compose.yml   Local MySQL for development
 - Docker (for local MySQL) or a local MySQL 8 server
 - An AWS account (610734023706 / chuanhtuan) with credentials configured (`aws configure --profile chuanhtuan`)
 - Terraform >= 1.5
-- An SMTP account for sending "forgot password" emails (Gmail app password, SendGrid, Mailgun, etc.)
+- An SMTP account for sending activation / "forgot password" emails (Gmail app password, SendGrid, Mailgun, etc.)
+- A Google OAuth 2.0 Client ID for "Sign in with Google" (see below)
+
+### Setting up Google Sign-In
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials.
+2. Create Credentials → OAuth client ID → Application type **Web application**.
+3. Under **Authorized JavaScript origins**, add every origin the frontend runs from, e.g. `http://localhost:5173` and your production domain. (No redirect URI is needed - this uses Google Identity Services' ID-token flow, not the redirect-based OAuth flow.)
+4. Copy the generated **Client ID** into both `backend/.env` (`GOOGLE_CLIENT_ID`) and `frontend/.env` (`VITE_GOOGLE_CLIENT_ID`) - it's the same value in both places. The frontend ID is not secret (it just identifies the app); no client secret is needed anywhere in this app.
 
 ## 1. Local development
 
@@ -122,8 +139,12 @@ git push -u origin main
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | /api/auth/signup | - | Create account |
-| POST | /api/auth/login | - | Log in |
+| POST | /api/auth/signup | - | Register with name + email; sends activation email |
+| GET | /api/auth/activate/:token | - | Validate an activation link (returns name/email) |
+| POST | /api/auth/activate/:token | - | Set password, activate account, and log in |
+| POST | /api/auth/resend-activation | - | Re-send the activation email |
+| POST | /api/auth/login | - | Log in with email + password + `remember` flag |
+| POST | /api/auth/google | - | Sign up or log in with a Google ID token (`credential`) + `remember` flag |
 | POST | /api/auth/logout | - | Log out |
 | POST | /api/auth/forgot-password | - | Request reset email |
 | POST | /api/auth/reset-password/:token | - | Set new password |
@@ -132,6 +153,7 @@ git push -u origin main
 | POST | /api/users/me/avatar | user | Upload avatar (multipart `avatar` field) |
 | GET | /api/users/:id | user (self) / admin | View a profile |
 | GET | /api/users | admin | List all users |
+| POST | /api/users | admin | Invite a user by name + email (sends activation email) |
 | DELETE | /api/users/:id | admin | Delete a user |
 
 ## Notes & next steps

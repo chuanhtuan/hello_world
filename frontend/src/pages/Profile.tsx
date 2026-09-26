@@ -51,6 +51,10 @@ export function Profile() {
           <dd>{user.email}</dd>
           <dt>Role</dt>
           <dd>{user.role}</dd>
+          <dt>Status</dt>
+          <dd><span className={`badge badge-${user.status.toLowerCase()}`}>{user.status}</span></dd>
+          <dt>Sign-in</dt>
+          <dd>{user.provider === 'GOOGLE' ? 'Google' : 'Email & password'}</dd>
         </dl>
         {error && <p className="error">{error}</p>}
         <Link to="/profile/edit" className="button-link">Edit profile</Link>

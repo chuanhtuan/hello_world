@@ -12,6 +12,8 @@ module.exports = {
         email: 'admin@helloworld.local',
         passwordHash,
         role: 'ADMIN',
+        status: 'ACTIVE',
+        provider: 'LOCAL',
         createdAt: new Date(),
         updatedAt: new Date(),
       },

@@ -25,8 +25,15 @@ export const env = {
   },
 
   jwtSecret: required('JWT_SECRET'),
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
+  // Session length depends on the "Remember me" checkbox: a short-lived
+  // token if unchecked, a long-lived one if checked.
+  jwtExpiresInDefault: process.env.JWT_EXPIRES_IN_DEFAULT ?? '1d',
+  jwtExpiresInRemember: process.env.JWT_EXPIRES_IN_REMEMBER ?? '30d',
   cookieName: process.env.COOKIE_NAME ?? 'hw_token',
+
+  // Activation links (set-password-and-activate) are valid longer than
+  // password reset links since users don't always check email right away.
+  activationTokenTtlMs: 24 * 60 * 60 * 1000, // 24h
 
   smtp: {
     host: process.env.SMTP_HOST ?? '',
@@ -35,6 +42,10 @@ export const env = {
     user: process.env.SMTP_USER ?? '',
     pass: process.env.SMTP_PASS ?? '',
     from: process.env.MAIL_FROM ?? 'HelloWorld <no-reply@helloworld.com>',
+  },
+
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID ?? '',
   },
 
   aws: {

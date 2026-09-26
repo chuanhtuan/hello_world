@@ -7,6 +7,8 @@ export const api = axios.create({
 
 // Attach the bearer token (fallback for browsers/dev setups where the
 // httpOnly cookie set by the API isn't sent, e.g. cross-site requests).
+// Whether this actually keeps working after a browser restart depends
+// on "Remember me" at login time - see AuthContext.
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -22,6 +24,8 @@ export interface User {
   email: string;
   avatarUrl: string | null;
   role: 'ADMIN' | 'USER';
+  status: 'PENDING' | 'ACTIVE';
+  provider: 'LOCAL' | 'GOOGLE';
   createdAt: string;
   updatedAt: string;
 }

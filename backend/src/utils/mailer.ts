@@ -26,3 +26,18 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     `,
   });
 }
+
+export async function sendActivationEmail(to: string, name: string, activationUrl: string) {
+  await transporter.sendMail({
+    from: env.smtp.from,
+    to,
+    subject: 'Activate your HelloWorld account',
+    text: `Hi ${name},\n\nAn account was created for you on HelloWorld. Click the link below to set your password and activate your account (valid for 24 hours):\n\n${activationUrl}\n\nIf you did not expect this, you can ignore this email.`,
+    html: `
+      <p>Hi ${name},</p>
+      <p>An account was created for you on HelloWorld.</p>
+      <p><a href="${activationUrl}">Click here to set your password and activate your account</a> (valid for 24 hours).</p>
+      <p>If you did not expect this, you can ignore this email.</p>
+    `,
+  });
+}

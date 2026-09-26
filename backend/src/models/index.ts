@@ -1,1 +1,1 @@
-export { User, Role } from './user.model';
+export { User, Role, UserStatus, AuthProvider } from './user.model';

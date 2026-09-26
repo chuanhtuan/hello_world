@@ -4,6 +4,7 @@ import { authenticate, requireRole } from '../middlewares/auth.middleware';
 import { avatarUpload } from '../middlewares/upload.middleware';
 import {
   listUsers,
+  createUser,
   getMyProfile,
   getUserById,
   updateMyProfile,
@@ -20,6 +21,7 @@ router.put('/me', updateMyProfile);
 router.post('/me/avatar', avatarUpload.single('avatar'), uploadMyAvatar);
 
 router.get('/', requireRole(Role.ADMIN), listUsers);
+router.post('/', requireRole(Role.ADMIN), createUser);
 router.get('/:id', getUserById);
 router.delete('/:id', requireRole(Role.ADMIN), deleteUser);
 
