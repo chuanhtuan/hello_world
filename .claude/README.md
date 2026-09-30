@@ -17,7 +17,9 @@ tiếp gì khi cần mở rộng.
 | Đặc tả tính năng | Requirements & Design Definition | `skills/feature-spec-writer/SKILL.md` | Skill | ✅ |
 | User Story | Requirements & Design Definition | `skills/user-story-spec/SKILL.md` | Skill | ✅ |
 | Plan & Task | Requirements & Design Definition | `skills/plan-and-tasks/SKILL.md` | Skill | ✅ |
-| Triển khai + Unit Test | Implementation | `skills/tdd-implement/SKILL.md` | Skill | ✅ |
+| Triển khai + Unit Test — điều phối | Implementation | `skills/tdd-implement/SKILL.md` | Skill (gọi 2 agent bên dưới theo thứ tự) | ✅ |
+| Triển khai + Unit Test — viết test (RED) | Implementation | `agents/test-writer.md` | Agent (Opus) | ✅ |
+| Triển khai + Unit Test — viết code (GREEN) | Implementation | `agents/code-implementer.md` | Agent (Sonnet) | ✅ |
 | Merge vào Feature Branch (mở PR) | Integration & Verification | `skills/create-pr/SKILL.md` | Skill | ✅ |
 | AI Review — Code lens | Integration & Verification | `agents/code-reviewer.md` | Agent (Sonnet) | ✅ |
 | AI Review — Security lens | Integration & Verification | `agents/security-reviewer.md` | Agent (Opus) | ✅ |
@@ -44,7 +46,10 @@ dùng để tự chấm repo đang đạt tới đâu:
   Agent/Skill sinh testcase ST (✅ trong `plan-and-tasks`, ở mức đơn giản
   cho quy mô hiện tại).
 - **Implementation** (1 tiêu chí): có Agent/Skill sinh code bám convention
-  dự án (✅ `tdd-implement`).
+  dự án (✅ — tách thành 2 agent độc lập model: `test-writer` viết test
+  trước bằng Opus, `code-implementer` viết code bằng Sonnet, điều phối bởi
+  skill `tdd-implement`, để tránh 1 model vừa viết code vừa viết test dẫn
+  tới test yếu/overfit).
 - **Integration & Verification** (4 tiêu chí): CI tự động chặn merge nếu
   Lint/Build/UT fail (❌ chưa có CI) · CI tự động chặn merge nếu phát hiện
   lỗ hổng bảo mật cấp tool — secret/SAST/CVE/IaC (❌ chưa có) · Agent tự
@@ -65,7 +70,7 @@ Thứ tự một vòng feature:
 1. `feature-spec-writer` → `feature-design.md`
 2. `user-story-spec` → `spec.md`
 3. `plan-and-tasks` → plan-fe/plan-be + tasks-fe/tasks-be/tasks-qc + testcases
-4. `tdd-implement` → code + unit test local pass
+4. `tdd-implement` → gọi `test-writer` (Opus, viết test trước, RED) → `code-implementer` (Sonnet, viết code cho tới GREEN, không sửa test) → unit test local pass
 5. `create-pr` → mở PR
 6. Gọi song song 2 agent `code-reviewer` + `security-reviewer` trên PR diff
 7. Peer review (người) → merge
