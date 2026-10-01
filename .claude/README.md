@@ -27,9 +27,12 @@ tảng" ban đầu rồi tách hẳn, không có bước duyệt chung nào ở 
      `security-reviewer`) → Peer Review (người) → merge.
    - **Nhánh Tester** — `test-plan-writer` (sinh `test-viewpoint.md` rồi
      testcase chức năng `testcases-ut.md`/`testcases-it-st.md`, KHÔNG đọc
-     plan-fe/plan-be của Dev để tránh thiên lệch) → `qc-automation`
-     (verify trên app đã deploy qua Playwright MCP) → `bug-triage` (log
-     bug) → `qc-automation` re-verify sau khi Dev fix.
+     plan-fe/plan-be của Dev để tránh thiên lệch, Test Lead review và
+     chuyển status `approved` trước khi cho verify) → **chờ build + deploy
+     lên Dev/Test** (xem mục "Chưa build" — hiện làm thủ công, không phải
+     agent/skill) → `qc-automation` (verify trên app đã deploy qua
+     Playwright MCP) → `bug-triage` (log bug) → `qc-automation` re-verify
+     sau khi Dev fix.
 
 **Lưu ý tên gọi dễ nhầm:** cả 2 nhánh đều dùng chữ "UT" nhưng nghĩa khác
 nhau — "code UT" (Dev, Vitest, source-level, viết trong `tdd-implement`)
@@ -108,13 +111,19 @@ dùng để tự chấm repo đang đạt tới đâu:
      song song `code-reviewer` + `security-reviewer` trên diff → `create-pr`
      → Peer review (người) → merge
    - **Tester**: `test-plan-writer` (test-viewpoint.md → testcases-ut.md/
-     testcases-it-st.md, KHÔNG đọc plan-fe/plan-be) → chờ Dev deploy
-5. Deploy Dev/Test → `qc-automation` verify qua Playwright MCP: hết vòng
-   UT rồi mới sang IT; case nào không tự động hoá được → bàn giao Tester
+     testcases-it-st.md, KHÔNG đọc plan-fe/plan-be → Test Lead review,
+     chuyển `approved`) → chờ Dev deploy
+5. **Build + deploy lên Dev/Test** — gate bắt buộc trước khi `qc-automation`
+   chạy ĐƯỢC CẢ UT lẫn IT (không chỉ riêng IT — `qc-automation` luôn cần
+   app đã deploy thật, không đọc source tree). Hiện bước này làm THỦ CÔNG
+   (SSH + pm2 restart, xem quy trình vận hành EC2 ngoài phạm vi `.claude/`)
+   — chưa có CI/CD tự động (xem mục "Chưa build").
+6. Deploy xong → `qc-automation` verify qua Playwright MCP: hết vòng UT
+   rồi mới sang IT; case nào không tự động hoá được → bàn giao Tester
    chạy tay
-6. Fail → `bug-triage` phân loại → quay lại nhánh Dev (`tdd-implement`)
-   fix → `qc-automation` re-verify đúng case đó (tối đa 3 vòng, quá thì
-   escalate)
+7. Fail → `bug-triage` phân loại → quay lại nhánh Dev (`tdd-implement`)
+   fix → build/deploy lại (bước 5) → `qc-automation` re-verify đúng case
+   đó (tối đa 3 vòng, quá thì escalate)
 
 ## Chưa build / follow-up
 

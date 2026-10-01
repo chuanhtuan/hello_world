@@ -4,16 +4,18 @@ description: >
   Turn an approved spec.md + feature-design.md (plus plan-foundation's
   data-model.md/contracts/ for technical reference only) into the
   Tester-side test design — a Test Viewpoint (test-viewpoint.md, coverage
-  checklist per screen: Access/UI/Function/Security/Data) and functional
-  testcases (testcases-ut.md, testcases-it-st.md) plus tasks-qc-ut-it.
-  This is the Tester track of Plan & Task, independent of the Dev track
-  (plan-dev-tasks) — it deliberately does NOT read plan-fe.md/plan-be.md,
-  so testcase design isn't biased toward however Dev plans to implement.
-  Use after plan-foundation's artifacts exist, can run in parallel with
-  plan-dev-tasks. Trigger words: "test viewpoint", "testcase UT",
-  "testcase IT", "thiết kế test case". Do NOT use this to plan Dev's
-  FE/BE work (that's plan-dev-tasks) and do NOT use this to execute the
-  testcases (that's qc-automation, runs later against a deployed app).
+  checklist per screen: Access/UI/Function/Security/Data), functional
+  testcases (testcases-ut.md, testcases-it-st.md), Test Lead sign-off on
+  both, plus tasks-qc-ut-it. This is the Tester track of Plan & Task,
+  independent of the Dev track (plan-dev-tasks) — it deliberately does
+  NOT read plan-fe.md/plan-be.md, so testcase design isn't biased toward
+  however Dev plans to implement. Use after plan-foundation's artifacts
+  exist, can run in parallel with plan-dev-tasks. Trigger words: "test
+  viewpoint", "testcase UT", "testcase IT", "thiết kế test case", "test
+  lead review". Do NOT use this to plan Dev's FE/BE work (that's
+  plan-dev-tasks), and do NOT use this to execute the testcases (that's
+  qc-automation) — qc-automation only starts once Test Lead has approved
+  the testcases here, not on a draft.
 ---
 
 # Plan & Task — Tester track (Requirements & Design Definition)
@@ -44,6 +46,12 @@ không đọc kế hoạch kỹ thuật của Dev.
    visual — layout CHỈ kiểm ở IT).
 3. **Sinh `tasks-qc-ut-it`** — task atomic cho việc verify sau này (input
    cho `qc-automation`).
+4. **Test Lead review `test-viewpoint.md` + `testcases-ut.md`/
+   `testcases-it-st.md`** — status đổi `draft → reviewed → approved` sau
+   khi Test Lead sign-off. Mục đích: bắt thiếu sót khía cạnh/case trước
+   khi tốn công chạy Playwright MCP thật, giống vai trò FE/BE lead review
+   plan ở nhánh Dev. `qc-automation` CHỈ được chạy trên testcase đã
+   `approved`, không chạy trên bản `draft`.
 
 ## Nguyên tắc độc lập
 
@@ -68,3 +76,4 @@ với "code UT" (unit test mức source code, Vitest) mà Dev viết trong
 - [ ] testcases-ut.md + testcases-it-st.md đã map đủ AC + edge case từ spec.md, không thiếu case nào
 - [ ] Không có testcase nào được thiết kế dựa trên cách Dev implement (chỉ dựa trên AC/spec)
 - [ ] Nếu contract đã đổi so với bản dùng để thiết kế testcase, đã rà soát lại và ghi chú case bị ảnh hưởng
+- [ ] Test Lead đã review và chuyển status sang `approved` — chưa approved thì chưa bàn giao cho `qc-automation`

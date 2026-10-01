@@ -28,9 +28,14 @@ file `*.spec.ts` tái chạy được.
 
 ## HALT — dừng lại nếu chưa rõ
 
-1. URL môi trường đã deploy (Dev/Test) cần verify.
+1. URL môi trường đã deploy (Dev/Test) cần verify — nếu chưa deploy (chưa
+   build + deploy bản mới nhất lên Dev/Test), DỪNG LẠI, đây là việc của
+   bước "Merge → Triển khai Dev/Test" (CI/CD build+deploy+smoke test),
+   không phải việc của agent này — không tự ý verify trên bản deploy cũ.
 2. File testcase nguồn: `testcases-ut.md` (Access/UI/Function, per-screen)
-   hoặc `testcases-it-st.md` (journey liên module / toàn hệ thống).
+   hoặc `testcases-it-st.md` (journey liên module / toàn hệ thống) — PHẢI
+   ở trạng thái `approved` (đã qua Test Lead review ở `test-plan-writer`),
+   không chạy trên bản `draft`.
 3. Playwright MCP tool có sẵn trong session hay không.
 
 Nếu Playwright MCP KHÔNG có sẵn → **HARD STOP**, báo cho người dùng, KHÔNG
