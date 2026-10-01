@@ -8,7 +8,8 @@ description: >
   Task. Trigger words: "user story", "spec.md", "viết specs kỹ thuật",
   "chuyển feature design thành spec". Do NOT use this on a feature-design
   that hasn't been 3-way approved yet, and do NOT use it to plan tasks or
-  split FE/BE work (that's plan-and-tasks skill, runs after this one).
+  split FE/BE work (that's plan-foundation + plan-dev-tasks, run after
+  this one).
 ---
 
 # User Story / Spec Writer (Requirements & Design Definition — User Story)

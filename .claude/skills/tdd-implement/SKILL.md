@@ -8,10 +8,10 @@ description: >
   written by the same Dev-side model in this one skill; this is
   deliberately NOT split across two models, because the independence that
   matters is Dev vs Tester, not code vs its own unit test. Use once
-  tasks-fe/tasks-be/testcases are approved (after plan-and-tasks). Trigger
+  tasks-fe/tasks-be are approved (after plan-dev-tasks). Trigger
   words: "implement this task", "code tính năng", "viết code + unit test",
   "TDD". Do NOT use this to design the plan/tasks (already done by
-  plan-and-tasks), do NOT use this to write functional testcases or
+  plan-dev-tasks), do NOT use this to write functional testcases or
   Playwright automation (that's the Tester track — test-viewpoint +
   qc-automation, a separate agent/model, verifying on the DEPLOYED app),
   and do NOT open the PR yourself — hand off to create-pr once local UT
@@ -39,7 +39,7 @@ riêng cho 2 việc này, vì:
   `testcases-it-st.md` — per-screen Access/UI/Function, chạy qua
   Playwright MCP trên app ĐÃ DEPLOY) do nhánh Tester sở hữu và verify độc
   lập bằng agent `qc-automation` (xem `test-viewpoint.md` trong
-  `plan-and-tasks` để biết nguồn gốc testcase này). Hai loại "UT" này
+  `test-plan-writer` để biết nguồn gốc testcase này). Hai loại "UT" này
   dùng chung chữ viết tắt nhưng là 2 khái niệm khác nhau — không trộn lẫn
   khi đọc tài liệu.
 - Thứ tự viết code trước hay code UT trước không quan trọng, miễn là cả

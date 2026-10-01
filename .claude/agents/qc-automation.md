@@ -7,7 +7,8 @@ description: >
   be automated for manual testing, and re-verify a specific testcase once
   Dev reports a bug fixed — the "Kiểm thử nghiệp vụ" / Validation stage.
   Use after a feature is deployed to Dev/Test and testcases-ut.md /
-  testcases-it-st.md already exist from the Plan & Task stage, and again
+  testcases-it-st.md already exist from the Tester track of Plan & Task
+  (test-plan-writer), and again
   (re-verify mode) after bug-triage hands a fix back from Dev. Trigger
   words: "run qc tests", "verify this deploy", "execute testcases", "test
   the deployed app", "verify bug fix", "re-test". Do NOT use this for code
