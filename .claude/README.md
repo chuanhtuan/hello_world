@@ -10,20 +10,42 @@ Transition/Operation/Maintenance & Disposal) chưa cần cho quy mô hiện tạ
 của HelloWorld nên chưa build — xem mục "Chưa build" bên dưới để biết build
 tiếp gì khi cần mở rộng.
 
+## Nguyên tắc tổ chức: 2 nhánh Dev / Tester độc lập
+
+Pipeline này chia rõ 2 nhánh chạy phần lớn độc lập với nhau, gặp nhau ở
+Plan & Task (nguồn testcase chung) và ở Validation (QC verify sản phẩm
+Dev làm ra):
+
+- **Nhánh Dev** (`tdd-implement`): viết source code VÀ unit test mức
+  source (code UT — white-box, Vitest, mock DB/mailer) — cả hai do CÙNG
+  MỘT model/phiên làm việc đảm nhiệm. Không tách 2 model cho code và code
+  UT, vì code UT là việc nội bộ của Dev (hiểu rõ implementation), tách ra
+  không có lợi ích, chỉ thêm round-trip.
+- **Nhánh Tester** (`plan-and-tasks` sinh test-viewpoint + testcase →
+  `qc-automation` verify → `bug-triage` log bug): sinh testcase CHỨC NĂNG
+  (per-screen Access/UI/Function, chạy qua Playwright MCP trên app ĐÃ
+  DEPLOY) — độc lập hoàn toàn với code UT của Dev.
+
+**Lưu ý tên gọi dễ nhầm:** cả 2 nhánh đều dùng chữ "UT" nhưng nghĩa khác
+nhau — "code UT" (Dev, Vitest, source-level) vs "testcase UT"
+(`testcases-ut.md`, Tester, functional, chạy trên app deploy). Khi đọc
+tài liệu trong repo này, luôn xem file đang nói tới cái nào.
+
+Ranh giới độc lập thật sự cần giữ là **Dev vs Tester** — không phải giữa
+code và code UT trong nội bộ Dev.
+
 ## Bản đồ stage → file trong repo này
 
 | Stage (theo mô hình gốc) | Phase | File | Loại | Trạng thái |
 |---|---|---|---|---|
 | Đặc tả tính năng | Requirements & Design Definition | `skills/feature-spec-writer/SKILL.md` | Skill | ✅ |
 | User Story | Requirements & Design Definition | `skills/user-story-spec/SKILL.md` | Skill | ✅ |
-| Plan & Task | Requirements & Design Definition | `skills/plan-and-tasks/SKILL.md` | Skill | ✅ |
-| Triển khai + Unit Test — điều phối | Implementation | `skills/tdd-implement/SKILL.md` | Skill (gọi 2 agent bên dưới theo thứ tự) | ✅ |
-| Triển khai + Unit Test — viết test (RED) | Implementation | `agents/test-writer.md` | Agent (Opus) | ✅ |
-| Triển khai + Unit Test — viết code (GREEN) | Implementation | `agents/code-implementer.md` | Agent (Sonnet) | ✅ |
+| Plan & Task (+ Test Viewpoint, testcase) | Requirements & Design Definition | `skills/plan-and-tasks/SKILL.md` | Skill | ✅ |
+| Triển khai + Unit Test (code + code UT, cùng 1 model) | Implementation | `skills/tdd-implement/SKILL.md` | Skill | ✅ |
 | Merge vào Feature Branch (mở PR) | Integration & Verification | `skills/create-pr/SKILL.md` | Skill | ✅ |
 | AI Review — Code lens | Integration & Verification | `agents/code-reviewer.md` | Agent (Sonnet) | ✅ |
 | AI Review — Security lens | Integration & Verification | `agents/security-reviewer.md` | Agent (Opus) | ✅ |
-| Kiểm thử nghiệp vụ (QC) | Validation (V&V / Testing) | `agents/qc-automation.md` | Agent (cần Playwright MCP) | ✅ |
+| Kiểm thử nghiệp vụ (QC) — testcase chức năng, manual fallback, re-verify bug fix | Validation (V&V / Testing) | `agents/qc-automation.md` | Agent (cần Playwright MCP) | ✅ |
 | Phân loại & xử lý bug | Validation (V&V / Testing) | `agents/bug-triage.md` | Agent | ✅ |
 | CI + Security Scan | Integration & Verification | — | CI job (GitHub Actions, 5 job song song: Lint/Build/UT, Secret Scan, SAST, Dependency CVE + SBOM, IaC scan) | chưa làm |
 | Script gộp 3 section PR Review | Integration & Verification | — | Script CI (~20 dòng), không phải agent | chưa làm |
@@ -41,15 +63,14 @@ dùng để tự chấm repo đang đạt tới đâu:
   nhận 3 bên (BA/Dev/Tester duyệt `feature-design.md` trước khi triển
   khai) · contract API giữa FE & BE được khoá làm nguồn tham chiếu chung ·
   có Agent/Skill hỗ trợ soạn đặc tả (✅ `feature-spec-writer`) · có
-  Agent/Skill sinh testcase UT theo từng màn (✅ trong `plan-and-tasks`) ·
-  có Agent/Skill sinh testcase IT (✅ trong `plan-and-tasks`) · có
-  Agent/Skill sinh testcase ST (✅ trong `plan-and-tasks`, ở mức đơn giản
-  cho quy mô hiện tại).
+  Agent/Skill sinh testcase UT theo từng màn (✅ trong `plan-and-tasks`,
+  xuất phát từ `test-viewpoint.md`) · có Agent/Skill sinh testcase IT (✅
+  trong `plan-and-tasks`) · có Agent/Skill sinh testcase ST (✅ trong
+  `plan-and-tasks`, ở mức đơn giản cho quy mô hiện tại).
 - **Implementation** (1 tiêu chí): có Agent/Skill sinh code bám convention
-  dự án (✅ — tách thành 2 agent độc lập model: `test-writer` viết test
-  trước bằng Opus, `code-implementer` viết code bằng Sonnet, điều phối bởi
-  skill `tdd-implement`, để tránh 1 model vừa viết code vừa viết test dẫn
-  tới test yếu/overfit).
+  dự án (✅ `tdd-implement` — code + code UT cùng một model Dev; độc lập
+  với testcase chức năng của Tester, không độc lập với chính code của
+  mình).
 - **Integration & Verification** (4 tiêu chí): CI tự động chặn merge nếu
   Lint/Build/UT fail (❌ chưa có CI) · CI tự động chặn merge nếu phát hiện
   lỗ hổng bảo mật cấp tool — secret/SAST/CVE/IaC (❌ chưa có) · Agent tự
@@ -58,10 +79,11 @@ dùng để tự chấm repo đang đạt tới đâu:
   quả quét bảo mật (❌ chưa có, phụ thuộc CI scan trước).
 - **Validation (V&V / Testing)** (5 tiêu chí): Agent/Skill chạy testcase UT
   qua Playwright MCP (✅ `qc-automation`) · chạy testcase IT qua Playwright
-  MCP (✅ `qc-automation`) · chạy testcase ST qua Playwright MCP (✅
-  `qc-automation`, mức đơn giản) · Agent/Skill log bug tự động (✅
-  `bug-triage`) · Agent/Skill đề xuất fix bug (✅ `bug-triage` gợi ý root
-  cause + file/line liên quan).
+  MCP (✅ `qc-automation`, chạy sau khi hết vòng UT) · chạy testcase ST qua
+  Playwright MCP (✅ `qc-automation`, mức đơn giản) · Agent/Skill log bug
+  tự động (✅ `bug-triage`) · Agent/Skill đề xuất fix bug (✅ `bug-triage`
+  gợi ý root cause + file/line liên quan, kèm `qc-automation` re-verify
+  sau khi Dev báo fix xong).
 
 ## Cách dùng nhanh
 
@@ -69,13 +91,21 @@ Thứ tự một vòng feature:
 
 1. `feature-spec-writer` → `feature-design.md`
 2. `user-story-spec` → `spec.md`
-3. `plan-and-tasks` → plan-fe/plan-be + tasks-fe/tasks-be/tasks-qc + testcases
-4. `tdd-implement` → gọi `test-writer` (Opus, viết test trước, RED) → `code-implementer` (Sonnet, viết code cho tới GREEN, không sửa test) → unit test local pass
-5. `create-pr` → mở PR
-6. Gọi song song 2 agent `code-reviewer` + `security-reviewer` trên PR diff
-7. Peer review (người) → merge
-8. Deploy Dev/Test → `qc-automation` verify qua Playwright MCP
-9. Fail → `bug-triage` phân loại, quay lại bước 4
+3. `plan-and-tasks` → plan-fe/plan-be + tasks-fe/tasks-be/tasks-qc +
+   `test-viewpoint.md` + testcases (`testcases-ut.md`, `testcases-it-st.md`)
+4. `tdd-implement` → Dev viết code + code UT (cùng 1 model), unit test
+   local pass
+5. Gọi song song 2 agent `code-reviewer` + `security-reviewer` trên diff
+   (tự review trước khi mở PR)
+6. Dev tự test theo `test-viewpoint.md` (sanity check cục bộ — không thay
+   thế bước `qc-automation` chạy trên app đã deploy)
+7. `create-pr` → mở PR
+8. Peer review (người) → merge
+9. Deploy Dev/Test → `qc-automation` verify qua Playwright MCP: hết vòng
+   UT rồi mới sang IT; case nào không tự động hoá được → bàn giao Tester
+   chạy tay
+10. Fail → `bug-triage` phân loại → quay lại bước 4 fix → `qc-automation`
+    re-verify đúng case đó (tối đa 3 vòng, quá thì escalate)
 
 ## Chưa build / follow-up
 
@@ -119,6 +149,7 @@ checklist có mệnh lệnh chặn ở cuối, và logic rẽ nhánh viết thà
 vì văn xuôi.
 
 ---
-*Cập nhật lần gần nhất: đối chiếu lại với bản gốc ngày 2026-09-30 — nếu tài
-liệu gốc thay đổi số stage/tiêu chí, nên đối chiếu lại mục "Bản đồ" và
-"Checklist" ở trên.*
+*Cập nhật lần gần nhất: 2026-10-01 — tách rõ 2 nhánh Dev/Tester độc lập,
+thêm Test Viewpoint vào Plan & Task, thêm manual fallback + re-verify bug
+fix vào qc-automation. Nếu tài liệu gốc thay đổi số stage/tiêu chí, nên
+đối chiếu lại mục "Bản đồ" và "Checklist" ở trên.*

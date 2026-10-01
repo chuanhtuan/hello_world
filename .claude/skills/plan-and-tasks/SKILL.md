@@ -3,13 +3,15 @@ name: plan-and-tasks
 description: >
   Turn an approved spec.md + feature-design.md into full design
   artifacts (research, data-model, contracts, quickstart, plan-fe,
-  plan-be) and atomic tasks split by FE/BE/QC (tasks-fe, tasks-be,
-  tasks-qc-ut-it) — the Plan & Task stage, last gate before Implementation.
-  Use after spec.md is committed. Trigger words: "plan & task", "chia
-  task FE BE", "lên plan tính năng", "/plan --split". Do NOT use this to
-  write the actual feature code (that's tdd-implement, runs after this
-  one), and do NOT skip QC — testcases must be designed here, before code
-  exists, not after.
+  plan-be), a Test Viewpoint (coverage checklist per screen — Access/UI/
+  Function/Security/Data), and atomic tasks split by FE/BE/QC (tasks-fe,
+  tasks-be, tasks-qc-ut-it) — the Plan & Task stage, last gate before
+  Implementation. Use after spec.md is committed. Trigger words: "plan &
+  task", "chia task FE BE", "lên plan tính năng", "/plan --split", "test
+  viewpoint". Do NOT use this to write the actual feature code (that's
+  tdd-implement, runs after this one), and do NOT skip QC — Test
+  Viewpoint + testcases must be designed here, before code exists, not
+  after.
 ---
 
 # Plan & Task (Requirements & Design Definition — Plan & Task)
@@ -46,9 +48,23 @@ bước này, Dev bắt đầu code (Implementation).
 4. **Sinh tasks atomic**: `tasks-fe` (F0–F4), `tasks-be` (B0–B4),
    `tasks-qc-ut-it`, `constraints` (cross-cutting, VD: naming convention áp
    dụng cho cả FE/BE).
-5. **QC + AI thiết kế testcases UT + IT-ST song song với Dev review plan** —
-   map AC + edge cases từ spec.md sang testcase cụ thể (`testcases-ut.md`,
-   `testcases-it-st.md`), làm input cho `qc-automation` agent về sau.
+5. **QC + AI sinh Test Viewpoint rồi testcases UT + IT-ST, song song với
+   Dev review plan**:
+   - **Test Viewpoint (`test-viewpoint.md`)** — TRƯỚC khi viết testcase cụ
+     thể, liệt kê khía cạnh cần test cho mỗi màn hình liên quan: Access
+     (quyền truy cập), UI (hiển thị/responsive), Function (logic nghiệp
+     vụ), Security (injection, IDOR, rate limit nếu liên quan), Data (dữ
+     liệu rỗng/trùng/biên). Mục đích: đảm bảo testcase sau không bỏ sót
+     khía cạnh, và cho Dev một checklist cụ thể để tự test trước khi mở
+     PR (xem `tdd-implement`/`code-reviewer`/`security-reviewer`).
+   - Từ Test Viewpoint, map AC + edge cases từ spec.md sang testcase cụ
+     thể (`testcases-ut.md`, `testcases-it-st.md`), làm input cho
+     `qc-automation` agent về sau.
+   - Lưu ý tên gọi: `testcases-ut.md` ở đây là **testcase chức năng**
+     (per-screen, chạy qua Playwright MCP trên app đã deploy) — KHÁC với
+     "unit test" mức source code (Vitest) mà Dev viết ở bước
+     `tdd-implement`. Hai thứ dùng chung chữ "UT" nhưng là 2 khái niệm
+     độc lập, không trộn lẫn.
 6. **Dev + QC duyệt toàn bộ một lượt cuối phase** — specs + plan + tasks +
    testcases duyệt cùng lúc, không duyệt rời rạc từng phần.
 
@@ -64,5 +80,6 @@ bước này, Dev bắt đầu code (Implementation).
 
 - [ ] contracts/ đã lock, FE lead + BE lead đều đã sign-off
 - [ ] tasks-fe/tasks-be atomic đủ nhỏ để review từng task trong 1 PR
-- [ ] testcases-ut.md + testcases-it-st.md đã map đủ AC từ spec.md, không thiếu case nào
-- [ ] Dev + QC đã duyệt TOÀN BỘ (specs + plan + tasks + testcases) một lượt, không rải rác nhiều lần duyệt
+- [ ] test-viewpoint.md đã liệt kê đủ khía cạnh (Access/UI/Function/Security/Data) cho mỗi màn liên quan, không có màn "chưa rõ viewpoint"
+- [ ] testcases-ut.md + testcases-it-st.md đã map đủ AC từ spec.md VÀ đủ khía cạnh từ test-viewpoint.md, không thiếu case nào
+- [ ] Dev + QC đã duyệt TOÀN BỘ (specs + plan + tasks + test-viewpoint + testcases) một lượt, không rải rác nhiều lần duyệt
