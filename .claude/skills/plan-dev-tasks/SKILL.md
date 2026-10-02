@@ -38,7 +38,7 @@ hoàn toàn với nhánh Tester, không cần chờ `test-plan-writer`.
 ## Quy trình
 
 1. **Sinh `plan-fe.md`** — component/state/route cần thêm, dựa trên
-   `contracts/` (draft) + `data-model.md`.
+   `contracts/` (đã `locked`) + `data-model.md`.
 2. **Sinh `plan-be.md`** — endpoint/service/migration cần thêm, dựa trên
    cùng nguồn.
 3. **FE lead review `plan-fe.md` ∥ BE lead review `plan-be.md` song
