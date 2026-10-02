@@ -2,15 +2,18 @@
 name: test-plan-writer
 description: >
   Turn an approved spec.md + feature-design.md (plus plan-foundation's
-  data-model.md/contracts/ for technical reference only) into the
-  Tester-side test design — a Test Viewpoint (test-viewpoint.md, coverage
-  checklist per screen: Access/UI/Function/Security/Data), functional
-  testcases (testcases-ut.md, testcases-it-st.md), Test Lead sign-off on
-  both, plus tasks-qc-ut-it. This is the Tester track of Plan & Task,
+  data-model.md/contracts/ — already LOCKED there, with QA/Test lead
+  having already signed off on the contract itself — for technical
+  reference only) into the Tester-side test design — a Test Viewpoint
+  (test-viewpoint.md, coverage checklist per screen: Access/UI/Function/
+  Security/Data), functional testcases (testcases-ut.md,
+  testcases-it-st.md), Test Lead sign-off on both (a separate gate from
+  the contract lock — this one checks test-design completeness, not the
+  contract), plus tasks-qc-ut-it. This is the Tester track of Plan & Task,
   independent of the Dev track (plan-dev-tasks) — it deliberately does
   NOT read plan-fe.md/plan-be.md, so testcase design isn't biased toward
-  however Dev plans to implement. Use after plan-foundation's artifacts
-  exist, can run in parallel with plan-dev-tasks. Trigger words: "test
+  however Dev plans to implement. Use after plan-foundation's contract is
+  `locked`, can run in parallel with plan-dev-tasks. Trigger words: "test
   viewpoint", "testcase UT", "testcase IT", "thiết kế test case", "test
   lead review". Do NOT use this to plan Dev's FE/BE work (that's
   plan-dev-tasks), and do NOT use this to execute the testcases (that's
@@ -29,9 +32,11 @@ không đọc kế hoạch kỹ thuật của Dev.
 ## HALT — dừng lại nếu chưa rõ
 
 1. `spec.md` + `feature-design.md` đã sẵn sàng.
-2. `data-model.md` + `contracts/` từ `plan-foundation` đã tồn tại (dùng để
-   tham chiếu kỹ thuật — VD field nào bắt buộc, response trả về gì —
-   KHÔNG dùng để suy ra cách Dev sẽ code).
+2. `data-model.md` + `contracts/` từ `plan-foundation` đã ở trạng thái
+   `locked` (qua 3-way sign-off FE lead ∥ BE lead ∥ QA/Test lead) — dùng
+   để tham chiếu kỹ thuật (VD field nào bắt buộc, response trả về gì),
+   KHÔNG dùng để suy ra cách Dev sẽ code. Nếu `contracts/` còn `draft`,
+   DỪNG LẠI, báo quay lại `plan-foundation` trước.
 
 ## Quy trình
 
@@ -59,9 +64,13 @@ không đọc kế hoạch kỹ thuật của Dev.
   cùng nằm trong 1 phiên hội thoại), vẫn PHẢI thiết kế testcase chỉ dựa
   trên spec/AC, không dựa trên "Dev định implement kiểu X nên test theo
   X".
-- Nếu `contracts/` đổi SAU KHI đã thiết kế xong testcase (do
-  `plan-dev-tasks` lock lại khác bản draft), phải rà soát lại testcase bị
-  ảnh hưởng — ghi chú rõ case nào cần sửa, không lặng lẽ bỏ qua.
+- Contract đã `locked` từ `plan-foundation` TRƯỚC KHI testcase được
+  thiết kế (không còn ở trạng thái `draft` lúc nhánh Tester bắt đầu), nên
+  rủi ro "đổi contract giữa chừng" đã giảm nhiều so với trước. Nếu hiếm
+  hoi vẫn phát sinh đổi contract sau khi đã thiết kế xong testcase (phải
+  quay lại `plan-foundation` mở lại 3-way sign-off mới đổi được), phải rà
+  soát lại testcase bị ảnh hưởng — ghi chú rõ case nào cần sửa, không
+  lặng lẽ bỏ qua.
 
 ## Lưu ý tên gọi dễ nhầm
 

@@ -10,29 +10,59 @@ Transition/Operation/Maintenance & Disposal) chưa cần cho quy mô hiện tạ
 của HelloWorld nên chưa build — xem mục "Chưa build" bên dưới để biết build
 tiếp gì khi cần mở rộng.
 
+## Vì sao tổ chức theo cách này: Trường phái "Contract-first / Spec-driven"
+
+Đối chiếu với thực tế AI-Driven SDLC trên thế giới, có 2 trường phái xử
+lý tương quan giữa chốt spec — Dev code — Tester thiết kế/chạy test:
+
+- **Trường phái A (shift-left CI-embedded)**: Dev code trước → AI sinh
+  test case từ chính code vừa commit. Nhanh, nhưng dễ khiến test bị
+  "overfit" theo cách code được viết (cùng đúng lỗi mà ta đã tránh khi
+  tách Dev/Tester độc lập ở dưới).
+- **Trường phái B (contract-first / spec-driven)** — **pipeline này theo
+  trường phái B**: spec/contract được CHỐT (lock) một lần, bởi một human
+  checkpoint duy nhất, TRƯỚC KHI bất kỳ agent nào (Dev hay Tester) bắt
+  đầu việc của mình; sau đó Dev và Tester chạy song song, độc lập, cùng
+  đọc 1 bản contract đã lock; cuối cùng một agent verifier so khớp kết
+  quả thực tế với SPEC GỐC (không so với "ý đồ implementation" của Dev).
+  Lý do chọn trường phái này: nhiều nguồn thực tế (spec-driven
+  development, contract-based multi-agent coordination) hội tụ về việc
+  điểm sửa rẻ nhất nằm ngay tại spec/contract — sai ở đó ảnh hưởng CẢ Dev
+  lẫn Tester cùng lúc, trong khi sai ở một nhánh riêng (testcase hoặc
+  code) chỉ ảnh hưởng nhánh đó.
+
 ## Nguyên tắc tổ chức: 2 nhánh Dev / Tester độc lập, tách từ Plan & Task
 
 Pipeline này chia rõ 2 nhánh chạy độc lập với nhau NGAY TỪ bước Plan &
 Task (không phải chỉ từ Implementation) — chúng chỉ dùng chung 1 "nền
-tảng" ban đầu rồi tách hẳn, không có bước duyệt chung nào ở cuối:
+tảng" ban đầu, LOCK xong mới tách hẳn, không có bước duyệt chung nào ở
+cuối:
 
 1. **`plan-foundation`** (dùng chung, chạy 1 lần) — sinh
-   `research.md`/`data-model.md`/`contracts/`(draft)/`quickstart.md`, thứ
-   cả Dev và Tester đều cần tham chiếu.
+   `research.md`/`data-model.md`/`contracts/`/`quickstart.md`, rồi **LOCK
+   contract ngay tại đây bằng 3-way sign-off (FE lead ∥ BE lead ∥ QA/Test
+   lead)** — đây là "điểm chốt" rẻ nhất để bắt sai sót, vì sai ở contract
+   ảnh hưởng CẢ Dev lẫn Tester cùng lúc. QA/Test lead có tiếng nói NGAY
+   TỪ ĐÂY (không phải đợi tới lúc viết testcase mới góp ý contract thiếu
+   gì). Dev và Tester chỉ bắt đầu tách nhánh SAU KHI contract đã
+   `locked`, không còn `draft`.
 2. Từ đây tách 2 nhánh **chạy song song, không phụ thuộc nhau**:
-   - **Nhánh Dev** — `plan-dev-tasks` (sinh plan-fe/plan-be + tasks-fe/
-     tasks-be, LOCK contract) → `tdd-implement` (viết source code VÀ code
-     UT — Vitest, white-box — CÙNG MỘT model, không tách rời vì đây là
-     việc nội bộ của Dev) → `create-pr` → AI Review (`code-reviewer` +
-     `security-reviewer`) → Peer Review (người) → merge.
+   - **Nhánh Dev** — `plan-dev-tasks` (sinh plan-fe/plan-be từ contract đã
+     `locked`, FE lead/BE lead approve KẾ HOẠCH KỸ THUẬT riêng — không
+     đổi contract ở đây — rồi chia tasks-fe/tasks-be) → `tdd-implement`
+     (viết source code VÀ code UT — Vitest, white-box — CÙNG MỘT model,
+     không tách rời vì đây là việc nội bộ của Dev) → `create-pr` → AI
+     Review (`code-reviewer` + `security-reviewer`) → Peer Review
+     (người) → merge.
    - **Nhánh Tester** — `test-plan-writer` (sinh `test-viewpoint.md` rồi
-     testcase chức năng `testcases-ut.md`/`testcases-it-st.md`, KHÔNG đọc
-     plan-fe/plan-be của Dev để tránh thiên lệch, Test Lead review và
-     chuyển status `approved` trước khi cho verify) → **chờ build + deploy
-     lên Dev/Test** (xem mục "Chưa build" — hiện làm thủ công, không phải
-     agent/skill) → `qc-automation` (verify trên app đã deploy qua
-     Playwright MCP) → `bug-triage` (log bug) → `qc-automation` re-verify
-     sau khi Dev fix.
+     testcase chức năng `testcases-ut.md`/`testcases-it-st.md` từ
+     contract đã `locked`, KHÔNG đọc plan-fe/plan-be của Dev để tránh
+     thiên lệch, Test Lead review và chuyển status `approved` trước khi
+     cho verify) → **chờ build + deploy lên Dev/Test** (xem mục "Chưa
+     build" — hiện làm thủ công, không phải agent/skill) → `qc-automation`
+     (verify trên app đã deploy qua Playwright MCP, so khớp với AC trong
+     spec.md/feature-design.md GỐC — không so với cách Dev implement) →
+     `bug-triage` (log bug) → `qc-automation` re-verify sau khi Dev fix.
 
 **Lưu ý tên gọi dễ nhầm:** cả 2 nhánh đều dùng chữ "UT" nhưng nghĩa khác
 nhau — "code UT" (Dev, Vitest, source-level, viết trong `tdd-implement`)
@@ -42,8 +72,8 @@ Playwright trên app deploy, sinh trong `test-plan-writer`). Luôn xem file
 
 Không có bước "duyệt chung Dev + QC cuối Plan & Task" — sự thống nhất
 giữa các bên đã có từ `spec.md` (3 bên approve ở stage trước) và từ bước
-lock contract trong `plan-dev-tasks`; thêm 1 vòng duyệt chung nữa là dư
-thừa.
+lock contract 3-way (FE/BE/QA) ở `plan-foundation`; thêm 1 vòng duyệt
+chung nữa ở cuối Plan & Task là dư thừa.
 
 ## Bản đồ stage → file trong repo này
 
@@ -75,7 +105,8 @@ dùng để tự chấm repo đang đạt tới đâu:
 - **Requirements & Design Definition** (6 tiêu chí): feature spec được xác
   nhận 3 bên (BA/Dev/Tester duyệt `feature-design.md` trước khi triển
   khai) · contract API giữa FE & BE được khoá làm nguồn tham chiếu chung
-  (✅ `plan-foundation` draft → `plan-dev-tasks` lock) · có Agent/Skill hỗ
+  (✅ `plan-foundation` — 3-way sign-off FE lead ∥ BE lead ∥ QA/Test lead,
+  lock ngay tại đây trước khi tách nhánh Dev/Tester) · có Agent/Skill hỗ
   trợ soạn đặc tả (✅ `feature-spec-writer`) · có Agent/Skill sinh testcase
   UT theo từng màn (✅ `test-plan-writer`, xuất phát từ `test-viewpoint.md`)
   · có Agent/Skill sinh testcase IT (✅ `test-plan-writer`) · có
@@ -103,13 +134,16 @@ dùng để tự chấm repo đang đạt tới đâu:
 
 1. `feature-spec-writer` → `feature-design.md`
 2. `user-story-spec` → `spec.md`
-3. `plan-foundation` → `research.md`/`data-model.md`/`contracts/`(draft)/
-   `quickstart.md` — nền tảng dùng chung
-4. Tách 2 nhánh chạy **song song, độc lập**:
-   - **Dev**: `plan-dev-tasks` (plan-fe/plan-be, lock contract, tasks-fe/
-     tasks-be) → `tdd-implement` (code + code UT, cùng 1 model) → gọi
-     song song `code-reviewer` + `security-reviewer` trên diff → `create-pr`
-     → Peer review (người) → merge
+3. `plan-foundation` → `research.md`/`data-model.md`/`contracts/`/
+   `quickstart.md`, rồi **lock contract bằng 3-way sign-off (FE lead ∥ BE
+   lead ∥ QA/Test lead)** ngay tại bước này — nền tảng dùng chung
+4. Tách 2 nhánh chạy **song song, độc lập**, cả hai đọc chung 1 bản
+   contract đã `locked`:
+   - **Dev**: `plan-dev-tasks` (plan-fe/plan-be từ contract đã locked, FE
+     lead/BE lead approve kế hoạch kỹ thuật riêng, tasks-fe/tasks-be) →
+     `tdd-implement` (code + code UT, cùng 1 model) → gọi song song
+     `code-reviewer` + `security-reviewer` trên diff → `create-pr` → Peer
+     review (người) → merge
    - **Tester**: `test-plan-writer` (test-viewpoint.md → testcases-ut.md/
      testcases-it-st.md, KHÔNG đọc plan-fe/plan-be → Test Lead review,
      chuyển `approved`) → chờ Dev deploy
@@ -167,8 +201,10 @@ checklist có mệnh lệnh chặn ở cuối, và logic rẽ nhánh viết thà
 vì văn xuôi.
 
 ---
-*Cập nhật lần gần nhất: 2026-10-01 — tách `plan-and-tasks` thành
-`plan-foundation` (dùng chung) + `plan-dev-tasks` (Dev) +
-`test-plan-writer` (Tester), bỏ bước duyệt chung cuối Plan & Task. Nếu
-tài liệu gốc thay đổi số stage/tiêu chí, nên đối chiếu lại mục "Bản đồ"
-và "Checklist" ở trên.*
+*Cập nhật lần gần nhất: 2026-10-02 — chuyển bước LOCK contract từ
+`plan-dev-tasks` lên `plan-foundation`, đổi từ 2-way (FE lead + BE lead)
+sang 3-way sign-off (FE lead ∥ BE lead ∥ QA/Test lead), để khớp nguyên
+tắc "điểm chốt rẻ nhất nằm ở spec/contract, trước khi tách nhánh" của
+trường phái AI-Driven contract-first/spec-driven. Nếu tài liệu gốc thay
+đổi số stage/tiêu chí, nên đối chiếu lại mục "Bản đồ" và "Checklist" ở
+trên.*
