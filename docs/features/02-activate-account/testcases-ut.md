@@ -12,3 +12,4 @@
 | UT2.8 (FE) | password và confirmPassword khác nhau | submit | báo lỗi "Passwords do not match" ngay, KHÔNG gọi `activateAccount` | AC3 |
 | UT2.9 | `User.findOne` trả `null` (email không tồn tại hoặc không PENDING) | `POST /resend-activation` | response 200 message trung lập, `sendActivationEmail` KHÔNG được gọi | AC7 |
 | UT2.10 | `User.findOne` trả user `status=PENDING` | `POST /resend-activation` | response 200 **cùng message** như UT2.9, `sendActivationEmail` **được gọi** | AC7 |
+| UT2.11 | token hợp lệ, `password="12345678"` (đúng biên 8 ký tự) | `POST /activate/:token` | pass — `user.save()` được gọi với `status=ACTIVE`, tương tự UT2.5 (bổ sung để đối chiếu boundary với feature 05, UT5.5) | NFR (password min-length boundary) |

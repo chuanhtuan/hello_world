@@ -60,3 +60,23 @@
 - Nếu 1 task cần sửa code hiện có (không chỉ thêm test), task đó phải
   ghi rõ **rủi ro regression** vì đây là code đang chạy production thật
   (`46.137.205.212.nip.io`).
+
+## Bảo mật — rủi ro đã biết, chưa có task (phát hiện khi làm Test Viewpoint)
+
+Phát hiện khi backfill `test-viewpoint.md` (2026-10-07): 2 endpoint sau
+**chưa có bất kỳ rate-limit/chống brute-force nào** trong code (đã kiểm
+tra toàn bộ `backend/src/app.ts` + `middlewares/` — không có
+`express-rate-limit` hay middleware tương đương):
+
+- `POST /api/auth/login` (feature 03) — rủi ro cao nhất: không giới hạn
+  số lần thử sai password, dễ bị brute-force.
+- `POST /api/auth/signup` (feature 01) — rủi ro thấp hơn nhưng vẫn mở:
+  spam tạo tài khoản `PENDING` hàng loạt.
+
+Đây là **thiếu tính năng**, không phải thiếu test — không thể viết
+testcase cho hành vi chưa tồn tại. Cần 1 task Dev riêng (ví dụ thêm
+`express-rate-limit`, giới hạn theo IP + email trên 2 endpoint này) đi
+qua đúng flow: BA/PM xác nhận ngưỡng cụ thể (số lần thử / khoảng thời
+gian) → viết AC → `plan-dev-tasks` → `tdd-implement` → viết testcase mới
+trong `test-plan-writer` sau khi đã có code. Chưa nên tự quyết ngưỡng số
+ở đây.

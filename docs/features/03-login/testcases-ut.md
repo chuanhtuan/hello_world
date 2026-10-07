@@ -12,3 +12,4 @@
 | UT3.8 | `remember=false` | `issueSession(res, user, false)` | JWT decode có `exp` ≈ now + 1 ngày (theo `JWT_EXPIRES_IN_DEFAULT`); cookie set KHÔNG có `maxAge` | AC1 |
 | UT3.9 | `remember=true` | `issueSession(res, user, true)` | JWT decode `exp` ≈ now + 30 ngày; cookie có `maxAge=30*24*60*60*1000` | AC2 |
 | UT3.10 (FE) | lỗi 401 trả về từ API | submit form | message lỗi hiển thị đúng trên form; input email/password KHÔNG bị xoá | AC6 |
+| UT3.11 (FE, as-built — chưa phải AC chính thức) | `user` đã có trong AuthContext (đã đăng nhập) | vào `/login` | KHÔNG có guard nào chặn — trang Login vẫn hiển thị form bình thường, không tự redirect về `/profile`. Cần BA xác nhận có cần chặn hay không trước khi viết AC chính thức. | (gap đã biết, không trace AC) |

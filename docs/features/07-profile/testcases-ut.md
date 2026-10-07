@@ -8,3 +8,5 @@
 | UT7.4 | `req.file` = `undefined` | `POST /users/me/avatar` | 400 "No file uploaded" | AC5 |
 | UT7.5 | `req.file` hợp lệ (`originalname="a.png"`, `mimetype="image/png"`) | `POST /users/me/avatar` | `S3Client.send` gọi với `Key` dạng `avatars/{userId}/{uuid}.png`; `user.avatarUrl` set đúng format URL S3; `user.save()` được gọi | AC4 |
 | UT7.6 (FE) | upload lỗi (API trả 400) | chọn file, upload | hiển thị message lỗi, `avatarUrl` hiển thị KHÔNG đổi (vẫn ảnh cũ/placeholder) | AC5 |
+| UT7.7 (FE) | `user={name:"Alice", email:"alice@test.com", role:"USER", status:"ACTIVE", provider:"LOCAL", avatarUrl:null}` | render `<Profile />` | hiển thị đúng Name, Email, Role, badge Status, "Email & password" (provider LOCAL), và placeholder chữ "A" (chữ cái đầu tên, vì `avatarUrl=null`) | AC1 |
+| UT7.8 (FE) | `user={name:"Bob", email:"bob@test.com"}` trong AuthContext | render `<EditProfile />` | input Name pre-fill `"Bob"`, input Email pre-fill `"bob@test.com"` | (as-built, hỗ trợ AC2) |

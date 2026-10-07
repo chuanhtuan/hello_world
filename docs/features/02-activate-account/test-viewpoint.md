@@ -7,13 +7,15 @@
 
 | Khía cạnh | Trạng thái | Ghi chú |
 |---|---|---|
-| Access | ✅ | Public, xác thực qua token trong URL, không cần đăng nhập — đúng thiết kế, không cần testcase access/role riêng. |
-| UI | ⚠️ GAP (một phần) | UT2.7 (checking state) + UT2.8 (confirm mismatch) có, nhưng AC2 ("Activation link invalid" + link quay Login hiển thị đúng khi token sai) **không có testcase FE** — chỉ test ở tầng API (UT2.2, IT2.2/2.3). |
-| Function | ✅ | UT2.1–UT2.10 + IT2.1–IT2.5 phủ đủ AC1, AC2, AC4, AC5, AC6, AC7 (resend). |
-| Security | ✅ | Token hash SHA-256 (UT2.1), one-time use (AC6, IT2.2), resend không lộ thông tin tài khoản (UT2.9/2.10 — message giống nhau). |
-| Data | ⚠️ GAP | Password boundary **đúng 8 ký tự** (hợp lệ) chưa có testcase riêng — chỉ có case <8 ký tự bị reject (UT2.4, IT2.4). So sánh: feature 05 (Forgot/Reset) có UT5.5 test đúng biên 8 ký tự, feature này thì không. |
+| Access | ✅ | Public, xác thực qua token trong URL, không cần đăng nhập. |
+| UI | ✅ | UT2.7 (checking state), UT2.8 (confirm mismatch); AC2 (màn lỗi) đã xác nhận đúng qua code (`ActivateAccount.tsx` render heading "Activation link invalid" + message + link Login khi `checkState==='invalid'`) — testcase API (UT2.2, IT2.2/2.3) coi là đủ vì component chỉ render thẳng theo state, không có logic phụ cần test riêng ở FE. |
+| Function | ✅ | UT2.1–UT2.11 + IT2.1–IT2.5 phủ đủ AC1, AC2, AC4, AC5, AC6, AC7. |
+| Security | ✅ | Token hash SHA-256 (UT2.1), one-time use (AC6, IT2.2), resend không lộ thông tin tài khoản (UT2.9/2.10). |
+| Data | ✅ (vừa bổ sung) | Boundary password = 8 ký tự giờ có UT2.11, nhất quán với feature 05. |
 
 ## Gaps cần Test Lead quyết định
 
-1. Bổ sung testcase FE cho màn hình lỗi "invalid or expired" (AC2) — hiện chỉ xác nhận ở tầng API.
-2. Bổ sung 1 testcase boundary password = 8 ký tự (pass) để nhất quán với feature 05.
+~~1. Bổ sung testcase FE cho màn lỗi AC2.~~ → Xác nhận lại code: component chỉ render theo state đã được API test xác nhận đúng, không cần thêm testcase FE riêng (khác AC1/AC7 ở feature 01, nơi có logic điều kiện phức tạp hơn ở FE).
+~~2. Bổ sung testcase boundary password = 8 ký tự.~~ → Đã bổ sung UT2.11.
+
+**Còn lại**: Test Lead review UT2.11 + toàn bộ testcase cũ, chuyển status `approved`.

@@ -7,13 +7,15 @@
 
 | Khía cạnh | Trạng thái | Ghi chú |
 |---|---|---|
-| Access | ⚠️ GAP (nhỏ) | Không có testcase "user đã login rồi vào lại `/login`" — hành vi mong đợi (redirect về `/profile`?) chưa được xác nhận. |
-| UI | ✅ | AC6 (lỗi hiển thị đúng chỗ, giữ nguyên input) được test ở UT3.10 (FE). |
-| Function | ✅ | UT3.1–UT3.9 + IT3.1–IT3.6 phủ đủ AC1–AC5, kể cả 2 giá trị remember (true/false) ở cả unit lẫn integration. |
-| Security | ✅ (mạnh) | AC3 chống user-enumeration được test rất kỹ — IT3.5/IT3.6 so sánh message "giống hệt" giữa email-không-tồn-tại và sai-password, đây là 1 trong những test bảo mật tốt nhất trong cả 8 feature. |
-| Data | ✅ | TTL session theo remember (1 ngày / 30 ngày) test ở cả mức JWT decode (UT3.8/3.9) lẫn `Set-Cookie` header thật (IT3.1/IT3.2). |
+| Access | ⚠️ as-built, chưa chốt AC | UT3.11 ghi nhận: KHÔNG có guard chặn user đã login vào lại `/login` — hành vi hiện tại, chưa phải AC chính thức, cần BA xác nhận (giống gap tương tự ở feature 01). |
+| UI | ✅ | AC6 test ở UT3.10 (FE). |
+| Function | ✅ | UT3.1–UT3.9 + IT3.1–IT3.6 phủ đủ AC1–AC5. |
+| Security | ⚠️ GAP — KHÔNG thể đóng bằng testcase | Không có rate-limit/account-lockout cho login sai nhiều lần — đã kiểm tra code, xác nhận chưa có. Đây là endpoint rủi ro cao nhất trong 8 feature (brute-force password) — cần 1 task Dev riêng trước khi viết testcase. Xem ghi chú chung ở `docs/plan/constraints.md`. |
+| Data | ✅ | TTL session theo remember test ở cả JWT decode (UT3.8/3.9) và `Set-Cookie` thật (IT3.1/IT3.2). |
 
 ## Gaps cần Test Lead quyết định
 
-1. Rate-limit / account-lockout cho login sai nhiều lần — KHÔNG có testcase nào, và đây là endpoint rủi ro cao nhất trong 8 feature (brute-force password). Nên đánh giá có cần bổ sung không, kể cả ở mức NFR trước khi viết testcase.
-2. Hành vi "đã login mà vào lại `/login`" — xác nhận với BA.
+~~1. Rate-limit / account-lockout.~~ → Xác nhận là thiếu tính năng (không có code) — đã ghi nhận vào `constraints.md` để lên task Dev riêng, **ưu tiên cao nhất** trong toàn bộ các gap phát hiện (endpoint rủi ro cao nhất).
+~~2. Hành vi "đã login mà vào lại /login".~~ → Đã ghi nhận as-built ở UT3.11, chờ BA xác nhận.
+
+**Còn lại**: Test Lead review UT3.11 + toàn bộ testcase cũ, chuyển status `approved`. Riêng mục Security vẫn mở cho tới khi Dev thêm rate-limit — không chặn các bước khác của pipeline, nhưng không nên coi feature này "an toàn" cho tới khi xử lý.

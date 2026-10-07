@@ -7,12 +7,14 @@
 
 | Khía cạnh | Trạng thái | Ghi chú |
 |---|---|---|
-| Access | ✅ | AC1 (nút chỉ hiện khi đã login) test ở UT6.2 (FE). |
-| UI | ✅ | UT6.3 (FE, click gọi đúng `logout()` rồi `navigate`). |
-| Function | ✅ | UT6.1 + IT6.1/IT6.2 (idempotent khi không có cookie). |
-| Security | ⚠️ GAP (một phần) | AC3 (sau logout, route cần đăng nhập bị chặn) được test ở tầng API (IT6.3: `/users/me` trả 401 khi không còn cookie), nhưng KHÔNG có testcase xác nhận `PrivateRoute` ở FE thực sự điều hướng về `/login` khi session đã mất — hiện chỉ suy luận gián tiếp từ 401. |
-| Data | — | Không áp dụng cho feature này. |
+| Access | ✅ | AC1 test ở UT6.2 (FE). |
+| UI | ✅ | UT6.3 (FE). |
+| Function | ✅ | UT6.1 + IT6.1/IT6.2. |
+| Security | ✅ (vừa bổ sung) | AC3 giờ có UT6.4 — unit test trực tiếp trên `<PrivateRoute />` (RTL + MemoryRouter, mock `user=null`), rẻ hơn và đủ tin cậy so với phương án ban đầu định dùng Playwright/`qc-automation` cho việc này. IT6.3 (API trả 401) vẫn giữ nguyên làm bằng chứng tầng backend. |
+| Data | — | Không áp dụng. |
 
 ## Gaps cần Test Lead quyết định
 
-1. Bổ sung 1 testcase FE (Playwright, chạy ở `qc-automation`) xác nhận `PrivateRoute` redirect về `/login` thật sự xảy ra khi truy cập `/profile` sau khi đã logout — hiện AC3 mới chỉ được chứng minh một nửa (tầng API), chưa chứng minh ở tầng UI.
+~~1. Bổ sung testcase xác nhận PrivateRoute redirect.~~ → Đã bổ sung UT6.4.
+
+**Còn lại**: Test Lead review UT6.4 + toàn bộ testcase cũ, chuyển status `approved`.

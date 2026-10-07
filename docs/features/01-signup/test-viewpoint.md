@@ -10,14 +10,16 @@
 
 | Khía cạnh | Trạng thái | Ghi chú |
 |---|---|---|
-| Access | ⚠️ GAP | Chưa có testcase cho "user đã đăng nhập rồi vào lại `/signup`" (redirect hay cho xem lại form?) — hành vi chưa được định nghĩa rõ trong feature-design. |
-| UI | ⚠️ GAP | AC1 (form chặn submit rỗng, không có field password) và AC7 (form được thay bằng thông báo thành công) **không có testcase FE nào** — toàn bộ `testcases-ut.md` của feature này chỉ test backend (UT1.1–UT1.10). |
+| Access | ⚠️ as-built, chưa chốt AC | UT1.13 ghi nhận: KHÔNG có guard chặn user đã login vào lại `/signup` — hành vi hiện tại, chưa phải AC chính thức, cần BA xác nhận. |
+| UI | ✅ (vừa bổ sung) | AC1 (UT1.11) + AC7 (UT1.12) giờ có testcase FE. Testcase mới, CHƯA qua Test Lead review. |
 | Function | ✅ | UT1.7–UT1.10 (controller) + IT1.1–IT1.5 (supertest) phủ đủ AC2, AC4, AC5, AC6. |
-| Security | ⚠️ GAP | Không có testcase cho rate-limit/abuse trên endpoint signup (spam tạo tài khoản PENDING hàng loạt) — chưa thấy đề cập trong NFR hay testcase nào. |
-| Data | ✅ | Boundary `name` 101 ký tự (UT1.3), email case-sensitivity trên MySQL thật (IT1.6, dạng research chứ không phải pass/fail — feed ngược BA theo đúng tinh thần Assumption #2). |
+| Security | ⚠️ GAP — KHÔNG thể đóng bằng testcase | Không có rate-limit/chống spam trên `POST /api/auth/signup` — đã kiểm tra `backend/src/app.ts` + toàn bộ middleware, xác nhận chưa có middleware rate-limit nào trong code. Đây là thiếu TÍNH NĂNG, không phải thiếu test — cần 1 task Dev riêng (thêm `express-rate-limit` hoặc tương đương) trước khi viết testcase. Xem ghi chú chung ở `docs/plan/constraints.md`. |
+| Data | ✅ | Boundary `name` 101 ký tự (UT1.3), email case-sensitivity trên MySQL thật (IT1.6). |
 
 ## Gaps cần Test Lead quyết định
 
-1. Bổ sung testcase FE cho AC1 + AC7 (hiện = 0 testcase UI cho màn hình chính của cả feature).
-2. Quyết định có cần rate-limit test cho `POST /api/auth/signup` hay chấp nhận rủi ro ở quy mô hiện tại.
-3. Hành vi "đã login mà vào `/signup`" — xác nhận với BA có cần chặn hay không trước khi viết testcase.
+~~1. Bổ sung testcase FE cho AC1 + AC7.~~ → Đã bổ sung UT1.11/UT1.12.
+~~2. Quyết định rate-limit.~~ → Xác nhận là thiếu tính năng (không có code), đã ghi nhận vào `constraints.md` để lên task Dev riêng — KHÔNG đóng bằng testcase ở đây.
+~~3. Hành vi "đã login mà vào /signup".~~ → Đã ghi nhận as-built ở UT1.13, chờ BA xác nhận có cần chặn hay không.
+
+**Còn lại**: Test Lead review UT1.11–UT1.13 + review lại toàn bộ testcase cũ, chuyển status `approved`.
