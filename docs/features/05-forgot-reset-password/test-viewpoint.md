@@ -15,5 +15,9 @@
 
 ## Gaps cần Test Lead quyết định
 
+> **Trạng thái: PENDING (2026-10-07)** — user đã xem 2 gap dưới đây và chủ động xin để lại,
+> sẽ cung cấp hướng xử lý sau. KHÔNG tự suy diễn hướng xử lý hoặc tự đóng gap này — chờ input
+> tiếp theo từ user trước khi testcase của feature này được chuyển `approved`.
+
 1. Bổ sung testcase FE cho cả 2 màn (message hiển thị, điều hướng sau reset).
 2. **Lưu ý riêng từ feature-design mục 6 (Rủi ro)**: hệ thống vừa đổi sang Gmail SMTP thật — testcase hiện tại đều mock `mailer.ts`, chưa có test nào verify luồng gửi email THẬT qua SMTP mới. Cần ít nhất 1 lần verify thủ công (hoặc testcase riêng khi deploy) trước khi coi feature này ổn định.

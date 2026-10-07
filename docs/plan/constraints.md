@@ -80,3 +80,32 @@ qua đúng flow: BA/PM xác nhận ngưỡng cụ thể (số lần thử / kho�
 gian) → viết AC → `plan-dev-tasks` → `tdd-implement` → viết testcase mới
 trong `test-plan-writer` sau khi đã có code. Chưa nên tự quyết ngưỡng số
 ở đây.
+
+> **Cập nhật (2026-10-07)**: user xác nhận tạm để NGOÀI SCOPE — coi rate-limiting
+> là non-functional requirement sẽ được bổ sung sau, chưa cần viết AC/task lúc này.
+> Giữ nguyên ghi chú trên để không mất dấu, nhưng KHÔNG tạo task cho đến khi user
+> chủ động quay lại chủ đề này.
+
+## Quyết định sản phẩm — User Admin: Soft-delete (feature 08)
+
+Phát hiện khi backfill `test-viewpoint.md` (2026-10-07): `08-user-admin` hiện
+**xoá cứng** (hard-delete) user khi admin xoá (API `DELETE /api/users/:id`).
+Rủi ro này đã được ghi trong `feature-design.md` mục 5 nhưng chưa có quyết định.
+
+**Quyết định (user, 2026-10-07): chuyển sang soft-delete.**
+
+Đây là thay đổi hành vi code, không phải việc của testcase — cần 1 task Dev
+riêng đi qua đúng flow (`plan-dev-tasks` → `tdd-implement`):
+
+- Thêm field soft-delete (ví dụ `deletedAt`) trên model `User`.
+- Đổi `DELETE /api/users/:id` từ xoá cứng sang set field này.
+- Lọc user đã soft-delete khỏi `UserList`, `UserDetail`, và chặn login.
+- Cần BA/PM xác nhận thêm chi tiết trước khi viết AC: user bị soft-delete có bị
+  chặn đăng nhập ngay không? Admin có xem lại được danh sách user đã xoá không
+  (và nếu có, màn hình nào)? Có cho phục hồi (un-delete) không?
+- Sau khi code đổi, `UT8.8`/`IT8.6` hiện tại (đang assert hard-delete) phải được
+  viết lại để assert hành vi soft-delete mới. Testcase hiện tại vẫn mô tả đúng
+  hành vi hiện tại của code nên tạm giữ làm baseline, approve cùng đợt review
+  còn lại, sẽ thay thế khi task trên hoàn thành — không phải điều kiện chặn
+  approve lúc này.
+

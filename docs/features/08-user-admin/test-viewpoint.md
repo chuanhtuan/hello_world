@@ -27,6 +27,15 @@
 
 ~~1. Bổ sung testcase FE cho AdminRoute.~~ → Đã bổ sung UT8.12/UT8.13.
 ~~2. Bổ sung testcase render cho UserList/UserDetail.~~ → Đã bổ sung UT8.14/UT8.15.
-3. Rủi ro hard-delete (đã ghi trong feature-design) — **vẫn còn mở**, đây là quyết định sản phẩm (cần soft-delete hay không), không thể đóng bằng testcase. Nhắc lại để không bị bỏ sót khi review.
+3. ~~Rủi ro hard-delete — quyết định sản phẩm.~~ → **Đã quyết định (user, 2026-10-07): chuyển sang soft-delete.**
+   Đây là **thay đổi hành vi code** (không phải gap test) — không đóng được bằng cách thêm testcase.
+   Cần 1 task Dev riêng: thêm cột/field `deletedAt` (hoặc tương đương) trên `User`, đổi
+   `DELETE /api/users/:id` từ xoá cứng sang set soft-delete, lọc user đã xoá khỏi
+   `UserList`/`UserDetail`/login. Sau khi code đổi, **UT8.8 và IT8.6 hiện tại (đang assert hard-delete)
+   phải viết lại** để assert hành vi soft-delete mới — đi qua đúng flow: BA/PM xác nhận chi tiết
+   (user bị soft-delete có bị chặn login ngay không? admin có xem lại được user đã xoá không?) →
+   `plan-dev-tasks` → `tdd-implement` → cập nhật testcase. Xem thêm backlog ở `docs/plan/constraints.md`.
 
 **Còn lại**: Test Lead review UT8.12–UT8.15 + toàn bộ testcase cũ, chuyển status `approved`.
+(Testcase hard-delete hiện tại — UT8.8/IT8.6 — vẫn mô tả ĐÚNG hành vi code HIỆN TẠI nên vẫn approve
+được như baseline; chúng sẽ được thay thế khi task soft-delete ở trên hoàn thành, không phải trước.)
