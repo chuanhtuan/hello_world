@@ -1,5 +1,7 @@
 # Testcases UT — Signup
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 > Map trực tiếp AC (`feature-design.md` §4) + Edge cases (`spec.md` §2).
 > UT = test hàm/controller đơn lẻ với dependency (DB, mailer) bị mock.
 

@@ -1,5 +1,7 @@
 # Testcases UT — Profile
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | UT7.1 | user hiện tại, `data={name:"New Name"}` | `PUT /users/me` | `user.name` đổi, `user.email` không đổi, không query kiểm tra trùng email | AC2 |

@@ -1,5 +1,7 @@
 # Test Viewpoint — User Admin
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 > Retroactive — xem ghi chú ở `01-signup/test-viewpoint.md`, áp dụng tương tự
 > ở đây.
 
@@ -36,6 +38,6 @@
    (user bị soft-delete có bị chặn login ngay không? admin có xem lại được user đã xoá không?) →
    `plan-dev-tasks` → `tdd-implement` → cập nhật testcase. Xem thêm backlog ở `docs/plan/constraints.md`.
 
-**Còn lại**: Test Lead review UT8.12–UT8.15 + toàn bộ testcase cũ, chuyển status `approved`.
-(Testcase hard-delete hiện tại — UT8.8/IT8.6 — vẫn mô tả ĐÚNG hành vi code HIỆN TẠI nên vẫn approve
-được như baseline; chúng sẽ được thay thế khi task soft-delete ở trên hoàn thành, không phải trước.)
+UT8.12–UT8.15 + toàn bộ testcase cũ đã được Test Lead duyệt (xem trạng thái ở đầu file).
+(Testcase hard-delete hiện tại — UT8.8/IT8.6 — vẫn mô tả ĐÚNG hành vi code HIỆN TẠI nên được approve
+làm baseline; chúng sẽ được thay thế khi task soft-delete ở trên hoàn thành, không phải trước.)

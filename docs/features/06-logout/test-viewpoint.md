@@ -1,5 +1,7 @@
 # Test Viewpoint — Logout
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 > Retroactive — xem ghi chú ở `01-signup/test-viewpoint.md`, áp dụng tương tự
 > ở đây.
 

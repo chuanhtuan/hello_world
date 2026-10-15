@@ -1,5 +1,7 @@
 # Testcases UT — Logout
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | UT6.1 | request bất kỳ (có/không cookie) | `logout()` được gọi | `res.clearCookie(cookieName, {httpOnly, secure, sameSite:'lax'})` được gọi đúng 1 lần; response `{message:"Logged out"}` | AC2 |

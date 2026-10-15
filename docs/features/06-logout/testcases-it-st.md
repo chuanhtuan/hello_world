@@ -1,5 +1,7 @@
 # Testcases IT-ST — Logout
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | IT6.1 | Đã login, có cookie session hợp lệ | `POST /api/auth/logout` | 200; response header `Set-Cookie` xoá cookie (giá trị rỗng/expired) | AC2 |

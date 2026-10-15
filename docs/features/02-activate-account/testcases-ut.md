@@ -1,5 +1,7 @@
 # Testcases UT — Activate Account
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | UT2.1 | raw token bất kỳ | `hashToken(raw)` gọi 2 lần | trả về đúng 2 lần cùng 1 giá trị (SHA-256 hex, 64 ký tự) | data-model §3 |

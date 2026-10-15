@@ -1,5 +1,7 @@
 # Testcases UT — Login
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | UT3.1 | `User.findOne` → `null` | `POST /login` | 401 "Invalid email or password" | AC3 |

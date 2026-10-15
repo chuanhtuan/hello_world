@@ -1,5 +1,7 @@
 # Testcases IT-ST — Activate Account
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | IT2.1 | Seed 1 user `PENDING` với token hợp lệ (raw token biết trước trong test) | `GET /api/auth/activate/:rawToken` rồi `POST` cùng token với password hợp lệ | 200 cả 2 bước; DB: `status=ACTIVE`, `activationToken=null`; response POST có cookie session hợp lệ | AC1, AC5 |

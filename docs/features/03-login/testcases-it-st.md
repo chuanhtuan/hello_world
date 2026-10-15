@@ -1,5 +1,7 @@
 # Testcases IT-ST — Login
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | IT3.1 | Seed 1 user `ACTIVE`, password biết trước (hash sẵn qua bcrypt trong seed) | `POST /api/auth/login` đúng email/password, `remember=false` | 200; `Set-Cookie` không có `Max-Age`/`Expires` | AC1 |

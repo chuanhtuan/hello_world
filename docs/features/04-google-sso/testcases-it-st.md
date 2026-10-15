@@ -1,5 +1,7 @@
 # Testcases IT-ST — Google SSO
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | IT4.1 | DB trống, mock `verifyIdToken` trả payload hợp lệ mới | `POST /api/auth/google` | 201/200; DB có 1 user mới `status=ACTIVE`, `provider=GOOGLE` | AC1 |

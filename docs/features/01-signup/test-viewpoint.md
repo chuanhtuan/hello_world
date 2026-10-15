@@ -1,5 +1,7 @@
 # Test Viewpoint — Signup
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 > Retroactive: testcase (`testcases-ut.md`/`testcases-it-st.md`) đã được viết
 > trước khi Test Viewpoint này tồn tại (qua skill cũ `plan-and-tasks`). File
 > này suy ngược từ AC (`feature-design.md` §4) + testcase đã có, để xác nhận

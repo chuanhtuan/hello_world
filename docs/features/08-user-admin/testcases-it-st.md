@@ -1,5 +1,7 @@
 # Testcases IT-ST — User Admin
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | IT8.1 | Seed 25 user, JWT admin | `GET /api/users` (không kèm query, đúng hành vi UI hiện tại) | 200; `users.length === 20` (mặc định `pageSize`), `total === 25` — **khẳng định lại gap đã ghi ở spec.md**: 5 user cũ nhất "biến mất" khỏi kết quả mặc định | spec.md Edge case #1 |

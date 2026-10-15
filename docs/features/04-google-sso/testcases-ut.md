@@ -1,5 +1,7 @@
 # Testcases UT — Google SSO
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | UT4.1 | `verifyIdToken` trả payload `email_verified=false` | `POST /google` | 400 "Google account email is not verified"; không gọi `User.create`/`save` | AC3 |

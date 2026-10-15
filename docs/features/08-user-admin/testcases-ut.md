@@ -1,5 +1,7 @@
 # Testcases UT — User Admin
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | UT8.1 | không truyền `page`/`pageSize` | `GET /users` | `findAndCountAll` gọi với `offset=0, limit=20` | AC2 |

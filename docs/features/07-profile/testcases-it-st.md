@@ -1,5 +1,7 @@
 # Testcases IT-ST — Profile
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 | ID | Given | When | Then | Trace |
 |---|---|---|---|---|
 | IT7.1 | Seed user A, JWT hợp lệ của A | `GET /api/users/me` | 200; đúng thông tin của A, không có `passwordHash` trong response | AC1 |

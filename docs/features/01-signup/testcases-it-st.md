@@ -1,5 +1,7 @@
 # Testcases IT-ST — Signup
 
+> **Trạng thái duyệt**: `approved` — Test Lead (Chu Anh Tuan) sign-off ngày 2026-10-15.
+
 > IT-ST = supertest gọi thật `app` (Express) + SQLite test DB (thật,
 > không mock DB) + mock `mailer.ts` (không gửi email thật).
 
