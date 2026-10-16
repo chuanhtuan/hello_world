@@ -1,0 +1,75 @@
+name: CI
+
+"on":
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (lint, test, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  frontend:
+    name: Frontend (lint, test, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  sast:
+    name: Security scan (secrets + SAST)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # gitleaks: scans for committed secrets (API keys, tokens, private keys).
+      # Run via the plain OSS CLI (docker image), not the branded gitleaks-action,
+      # which now requires a paid license for private repositories.
+      - name: gitleaks (secret scan)
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+            detect --source=/repo --no-git -v --redact
+
+      # Semgrep: pattern-based SAST (injection, hardcoded secrets, insecure
+      # defaults). Uses public rule packs only - no Semgrep App/login token
+      # required, so no extra secret needs to be configured on this repo.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Semgrep (SAST)
+        run: |
+          pip install semgrep
+          semgrep scan --config p/default --config p/secrets --error --metrics=off
