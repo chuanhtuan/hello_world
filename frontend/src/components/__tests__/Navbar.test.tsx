@@ -88,9 +88,10 @@ describe('Navbar', () => {
     expect(localStorage.getItem('token')).toBeNull();
   });
 
-  // Logout must clear local session + navigate even if the server call
-  // fails - a failed request must not leave the token in localStorage on
-  // a shared/kiosk machine (AuthContext.logout / Navbar.handleLogout).
+  // AC: (as-built, no AC) / testcases-ut.md UT6.5 - logout must clear local
+  // session + navigate even if the server call fails - a failed request
+  // must not leave the token in localStorage on a shared/kiosk machine
+  // (AuthContext.logout / Navbar.handleLogout).
   it('clicking Logout still clears the token and navigates to /login when the request fails', async () => {
     server.use(http.post(`${API_BASE}/auth/logout`, () => new HttpResponse(null, { status: 500 })));
     localStorage.setItem('token', 'fake-token');
