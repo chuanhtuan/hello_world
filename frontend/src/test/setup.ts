@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import { server } from './msw-server';
 
@@ -9,3 +10,9 @@ import { server } from './msw-server';
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+// vitest.config.ts không bật `test.globals`, nên RTL không tự nhận ra
+// `afterEach` toàn cục để auto-cleanup DOM giữa các test (xem RTL docs:
+// auto-cleanup chỉ hoạt động khi phát hiện global test framework). Thiếu
+// dòng này, nhiều `it()` trong cùng 1 file sẽ render chồng DOM lên nhau.
+afterEach(() => cleanup());
