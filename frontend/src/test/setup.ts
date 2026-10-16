@@ -16,3 +16,7 @@ afterAll(() => server.close());
 // auto-cleanup chỉ hoạt động khi phát hiện global test framework). Thiếu
 // dòng này, nhiều `it()` trong cùng 1 file sẽ render chồng DOM lên nhau.
 afterEach(() => cleanup());
+
+// Test nào set token (VD giả lập đã đăng nhập) mà fail trước khi tự xoá sẽ
+// làm localStorage rò sang test sau trong cùng file - dọn sau mỗi test.
+afterEach(() => localStorage.clear());

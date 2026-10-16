@@ -6,6 +6,8 @@ export function Navbar() {
   const navigate = useNavigate();
 
   async function handleLogout() {
+    // logout() never rejects (see AuthContext) - local state is always
+    // cleared, so it's always safe to navigate away afterwards.
     await logout();
     navigate('/login');
   }

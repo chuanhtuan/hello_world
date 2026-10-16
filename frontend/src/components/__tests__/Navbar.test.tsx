@@ -5,10 +5,9 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { api } from '../../api/client';
 import { AuthProvider } from '../../context/AuthContext';
+import { API_BASE } from '../../test/msw-handlers';
 import { server } from '../../test/msw-server';
 import { Navbar } from '../Navbar';
-
-const API_BASE = 'http://localhost:4000/api';
 
 // Theo contracts/auth-contracts.md + user-contracts.md (PublicUser shape).
 const authedUser = {
@@ -85,6 +84,21 @@ describe('Navbar', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Logout' }));
 
     expect(postSpy).toHaveBeenCalledWith('/auth/logout');
+    expect(await screen.findByText('Login Page')).toBeInTheDocument();
+    expect(localStorage.getItem('token')).toBeNull();
+  });
+
+  // Logout must clear local session + navigate even if the server call
+  // fails - a failed request must not leave the token in localStorage on
+  // a shared/kiosk machine (AuthContext.logout / Navbar.handleLogout).
+  it('clicking Logout still clears the token and navigates to /login when the request fails', async () => {
+    server.use(http.post(`${API_BASE}/auth/logout`, () => new HttpResponse(null, { status: 500 })));
+    localStorage.setItem('token', 'fake-token');
+
+    renderAuthedNavbar();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Logout' }));
+
     expect(await screen.findByText('Login Page')).toBeInTheDocument();
     expect(localStorage.getItem('token')).toBeNull();
   });

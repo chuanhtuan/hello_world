@@ -1,9 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import app from '../../app';
 import { env } from '../../config/env';
 import { signToken } from '../../utils/jwt';
 import { Role } from '../../models/user.model';
+
+// supertest/superagent types `set-cookie` as a single string, but Node's
+// raw headers give one entry per Set-Cookie line - normalize to an array
+// either way instead of casting through `unknown`.
+function getSetCookies(res: Response): string[] {
+  const header = res.headers['set-cookie'];
+  if (!header) return [];
+  return Array.isArray(header) ? header : [header];
+}
 
 // AC: feature-design.md §4 AC2 / testcases-it-st.md IT6.1, IT6.2
 describe('POST /api/auth/logout', () => {
@@ -17,11 +26,12 @@ describe('POST /api/auth/logout', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ message: 'Logged out' });
 
-    const setCookie = ([] as string[]).concat(res.headers['set-cookie'] as unknown as string | string[]);
-    const cleared = setCookie.find((c) => c.startsWith(`${env.cookieName}=`));
+    const cleared = getSetCookies(res).find((c) => c.startsWith(`${env.cookieName}=`));
     expect(cleared).toBeDefined();
     expect(cleared).toMatch(new RegExp(`^${env.cookieName}=;`));
-    expect(cleared!.toLowerCase()).toMatch(/expires=thu, 01 jan 1970/);
+    const lowered = cleared!.toLowerCase();
+    expect(lowered).toMatch(/expires=thu, 01 jan 1970/);
+    expect(lowered).toMatch(/samesite=lax/);
   });
 
   it('IT6.2 - with no cookie at all: still returns 200 (idempotent)', async () => {
