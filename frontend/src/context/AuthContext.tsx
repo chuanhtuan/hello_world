@@ -68,9 +68,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout() {
-    await api.post('/auth/logout');
-    localStorage.removeItem('token');
-    setUser(null);
+    // Always clear local state, even if the request fails (network error,
+    // 5xx) - on a shared/kiosk machine a failed server call must not leave
+    // the token in localStorage and the user looking logged in. Swallow
+    // the error: there's no UI for a failed logout, the caller (Navbar)
+    // always navigates to /login right after this resolves.
+    try {
+      await api.post('/auth/logout');
+    } catch {
+      // ignore - local cleanup below still runs either way
+    } finally {
+      localStorage.removeItem('token');
+      setUser(null);
+    }
   }
 
   return (
